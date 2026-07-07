@@ -1,0 +1,37 @@
+.clay-btn {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--clay-radius);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all var(--transition-speed) ease;
+}
+
+.clay-btn-primary {
+  background-color: var(--primary);
+  color: var(--primary-text);
+  box-shadow: 
+    6px 6px 12px var(--shadow-dark), 
+    -6px -6px 12px var(--shadow-light);
+}
+
+.clay-btn-primary:active {
+  box-shadow: 
+    inset 4px 4px 8px rgba(0, 0, 0, 0.2), 
+    inset -4px -4px 8px rgba(255, 255, 255, 0.2);
+}
+
+.clay-btn-secondary {
+  background-color: var(--surface-color);
+  color: var(--text-main);
+  box-shadow: 
+    6px 6px 12px var(--shadow-dark), 
+    -6px -6px 12px var(--shadow-light);
+}
+
+.clay-btn-secondary:active {
+  box-shadow: var(--clay-inner-shadow);
+}

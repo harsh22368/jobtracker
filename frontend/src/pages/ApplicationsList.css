@@ -1,0 +1,104 @@
+.list-toolbar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.5rem;
+  flex-wrap: wrap;
+}
+
+.search-wrap, .filter-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-wrap { flex: 1; min-width: 250px; }
+.filter-wrap { width: 220px; }
+
+.search-icon, .filter-icon {
+  position: absolute;
+  left: 1rem;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search-input, .filter-select {
+  padding-left: 2.8rem;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid transparent;
+  width: 100%;
+}
+
+.filter-select {
+  padding-left: 2.8rem;
+  padding-right: 1rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.search-input:focus, .filter-select:focus {
+  background: rgba(255,255,255,0.05);
+}
+
+.table-container {
+  padding: 0;
+  overflow-x: auto;
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.app-table th {
+  text-align: left;
+  padding: 1.2rem 1.5rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  font-weight: 700;
+  border-bottom: 1px solid var(--card-border);
+  white-space: nowrap;
+}
+
+.app-table td {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  font-size: 0.95rem;
+}
+
+.app-table tr {
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.app-table tr:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+.app-table tr:last-child td { border-bottom: none; }
+
+.actions-cell { text-align: right; }
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 0.5rem;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all var(--transition);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+
+.icon-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.icon-btn.danger:hover { background: rgba(239,68,68,0.15); color: #f87171; }
+
+.empty-state {
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-weight: 500;
+}

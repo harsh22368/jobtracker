@@ -1,0 +1,231 @@
+.pipeline-page {
+  padding: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pipeline-header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.pipeline-header h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 3rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.pipeline-header p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.pipeline-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.pipeline-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  min-height: 180px;
+}
+
+.card-content h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.4rem;
+  margin-bottom: 0.3rem;
+}
+
+.highlight-company {
+  color: var(--rose);
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(255, 62, 165, 0.3);
+}
+
+.card-content .job-title {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.highlight-role {
+  color: var(--mint);
+  font-weight: 500;
+}
+
+.current-stage {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.current-stage span {
+  color: #4ade80;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.pipeline-section {
+  margin-bottom: 4rem;
+}
+
+.pipeline-section h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  border-left: 4px solid var(--rose);
+  padding-left: 1rem;
+}
+
+/* Timeline Container */
+.timeline-container {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  position: relative;
+  transition: opacity 0.3s;
+  opacity: 0.7;
+}
+
+.pipeline-card:hover .timeline-container {
+  opacity: 1;
+}
+
+.timeline-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.timeline-label .temp-stage {
+  color: var(--mint);
+  font-weight: 600;
+}
+
+/* Custom Range Slider */
+.stage-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  outline: none;
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.stage-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--rose);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255, 62, 165, 0.6);
+  border: 2px solid #fff;
+  transition: transform 0.1s ease;
+}
+
+.stage-slider::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+  background: var(--mint);
+  box-shadow: 0 0 15px rgba(46, 213, 115, 0.8);
+}
+
+.timeline-ticks {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 48px;
+  left: 5px;
+  right: 5px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tick {
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.tick.active-tick {
+  background: var(--rose);
+  box-shadow: 0 0 5px var(--rose);
+}
+
+/* Offers Section */
+.offers-section h2 {
+  border-left-color: var(--mint);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.trophy-icon {
+  color: var(--mint);
+}
+
+.offer-card {
+  position: relative;
+  background: rgba(45, 212, 191, 0.05); /* Mint tint */
+  border: 1px solid rgba(45, 212, 191, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 25px rgba(45, 212, 191, 0.05);
+  min-height: 140px;
+}
+
+.offer-glow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(45, 212, 191, 0.1) 0%, transparent 60%);
+  animation: rotate-glow 10s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rotate-glow {
+  100% { transform: rotate(360deg); }
+}
+
+.offer-status {
+  font-size: 0.95rem;
+  margin-top: 1rem;
+}
+
+.text-gold {
+  color: var(--mint);
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(45, 212, 191, 0.4);
+}
+
+.empty-pipeline, .empty-offers {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--card-border);
+  color: var(--text-muted);
+}
