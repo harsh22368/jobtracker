@@ -1,0 +1,178 @@
+.round-timeline-container {
+  padding: 1rem 0;
+}
+
+.timeline-progress-header {
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+}
+
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.progress-bar-bg {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--gradient-mint);
+  border-radius: 10px;
+  box-shadow: 0 0 10px var(--mint-glow);
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem;
+}
+
+.timeline-item {
+  position: relative;
+  display: flex;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-connector {
+  position: absolute;
+  left: 11px;
+  top: 24px;
+  bottom: 0;
+  width: 2px;
+  background: dashed 1px rgba(255, 255, 255, 0.1);
+}
+
+.timeline-connector-fill {
+  width: 100%;
+  background: var(--mint);
+  box-shadow: 0 0 8px var(--mint-glow);
+}
+
+.timeline-node {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.pending .timeline-node {
+  background: var(--card);
+  border: 2px solid var(--card-border);
+}
+
+.pending .timeline-node .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.completed .timeline-node {
+  background: var(--mint);
+  color: #000;
+  box-shadow: 0 0 15px var(--mint-glow);
+}
+
+.timeline-content {
+  flex: 1;
+  padding-top: 2px;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.round-name {
+  font-size: 1.1rem;
+  margin: 0 0 0.2rem 0;
+  color: var(--text);
+  position: relative;
+  display: inline-block;
+}
+
+/* The Strikethrough Animation */
+.round-name.strikethrough {
+  color: var(--text-muted);
+}
+
+.round-name.strikethrough::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 2px;
+  background: var(--mint);
+  animation: strikethrough-draw 0.5s ease-out forwards;
+}
+
+@keyframes strikethrough-draw {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+.round-date {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.mark-complete-btn {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all var(--transition);
+}
+
+.timeline-item:hover .mark-complete-btn {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.mark-complete-btn:hover {
+  color: var(--mint);
+  background: rgba(45, 212, 191, 0.1);
+}
+
+.feedback-prompt {
+  padding: 1rem;
+  border-color: rgba(45, 212, 191, 0.2);
+  background: rgba(45, 212, 191, 0.05);
+}
+
+.feedback-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.round-notes {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}

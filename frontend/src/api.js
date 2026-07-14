@@ -1,12 +1,13 @@
 import axios from 'axios';
 
 const api = axios.create({
-  // Use Vercel's environment variable for production, fallback to relative /api for local dev
   baseURL: import.meta.env.VITE_API_URL || '/api', 
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+// ── Applications ──
 
 export const getApplications = async (params) => {
   const response = await api.get('/applications', { params });
@@ -46,6 +47,35 @@ export const uploadResume = async (id, file) => {
 
 export const getResumeDownloadUrl = (id) => {
   return `${api.defaults.baseURL}/applications/${id}/resume`;
+};
+
+// ── JD Parser ──
+
+export const parseJobDescription = async (rawText) => {
+  const response = await api.post('/jd/parse', { rawText });
+  return response.data;
+};
+
+// ── Interview Rounds ──
+
+export const getRounds = async (appId) => {
+  const response = await api.get(`/applications/${appId}/rounds`);
+  return response.data;
+};
+
+export const addRounds = async (appId, rounds) => {
+  const response = await api.post(`/applications/${appId}/rounds`, rounds);
+  return response.data;
+};
+
+export const updateRound = async (appId, roundId, data) => {
+  const response = await api.put(`/applications/${appId}/rounds/${roundId}`, data);
+  return response.data;
+};
+
+export const deleteRound = async (appId, roundId) => {
+  const response = await api.delete(`/applications/${appId}/rounds/${roundId}`);
+  return response.data;
 };
 
 export default api;

@@ -9,10 +9,21 @@ const SmartUpdateModal = ({ onComplete }) => {
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [bubblePos, setBubblePos] = useState({ top: '80%', left: '80%' });
+  
+  // Undo state
+  const [undoState, setUndoState] = useState(null); // { app, oldStatus, newStatus }
+  const [showUndo, setShowUndo] = useState(false);
+  const [undoTimer, setUndoTimer] = useState(null);
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const controls = useAnimation();
+
+  useEffect(() => {
+    return () => {
+      if (undoTimer) clearTimeout(undoTimer);
+    };
+  }, [undoTimer]);
 
   useEffect(() => {
     // Generate random position for the hover bubble, 
@@ -53,9 +64,17 @@ const SmartUpdateModal = ({ onComplete }) => {
     if (newStatus) {
       controls.set({ x: 0, y: 0 });
       
+      const app = pendingApps[currentIndex];
+      
       if (newStatus !== 'Applied') {
-        const app = pendingApps[currentIndex];
+        // Save old state for undo
+        setUndoState({ app, oldStatus: app.status, newStatus });
         await updateApplication(app.id, { ...app, status: newStatus });
+        
+        // Show toast and auto-hide
+        setShowUndo(true);
+        if (undoTimer) clearTimeout(undoTimer);
+        setUndoTimer(setTimeout(() => setShowUndo(false), 3000));
       }
       
       if (currentIndex + 1 < pendingApps.length) {
@@ -69,6 +88,16 @@ const SmartUpdateModal = ({ onComplete }) => {
       }
     } else {
       controls.start({ x: 0, y: 0, transition: { type: 'spring', stiffness: 300, damping: 20 } });
+    }
+  };
+
+  const handleUndo = async () => {
+    if (undoState) {
+      const { app, oldStatus } = undoState;
+      await updateApplication(app.id, { ...app, status: oldStatus });
+      setShowUndo(false);
+      if (undoTimer) clearTimeout(undoTimer);
+      // We don't change currentIndex back, the undo just reverts the DB state silently
     }
   };
 
@@ -142,6 +171,25 @@ const SmartUpdateModal = ({ onComplete }) => {
 
             <button className="skip-btn" onClick={handleSkip}>Skip</button>
           </div>
+        </motion.div>
+      )}
+
+      {/* Undo Toast */}
+      {showUndo && undoState && (
+        <motion.div 
+          className="undo-toast"
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 50, opacity: 0 }}
+        >
+          <div className="toast-content">
+            <span className="toast-icon">✅</span>
+            <span>
+              <strong>{undoState.app.company}</strong> moved to {undoState.newStatus}
+            </span>
+            <button className="undo-btn" onClick={handleUndo}>Undo</button>
+          </div>
+          <div className="toast-progress-bar"></div>
         </motion.div>
       )}
     </AnimatePresence>

@@ -1,0 +1,215 @@
+.shortlisted-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 4rem;
+}
+
+.shortlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 4rem;
+}
+
+.shortlist-card {
+  padding: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.shortlist-card.hover-glow:hover {
+  border-color: rgba(244, 63, 94, 0.3); /* Rose */
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(244, 63, 94, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.company-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.company-logo-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--rose-glow);
+  color: var(--rose);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  border: 1px solid rgba(244, 63, 94, 0.2);
+}
+
+.company-name {
+  font-size: 1.1rem;
+  margin: 0 0 0.2rem 0;
+  color: var(--text);
+}
+
+.role-name {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.remove-btn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.rounds-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all var(--transition);
+}
+
+.rounds-badge.no-rounds {
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed var(--card-border);
+  color: var(--text-muted);
+}
+
+.shortlist-card:hover .rounds-badge.no-rounds {
+  border-color: var(--rose);
+  color: var(--rose);
+}
+
+.rounds-badge.has-rounds {
+  background: rgba(45, 212, 191, 0.1); /* Mint */
+  border: 1px solid rgba(45, 212, 191, 0.2);
+  color: var(--mint);
+}
+
+.shortlist-card:hover .badge-icon {
+  transform: translateX(3px);
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 4rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.01);
+  border-style: dashed;
+}
+
+/* Offers Section */
+.offers-section {
+  margin-top: 4rem;
+}
+
+.offers-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.offers-header h2 {
+  color: var(--mint);
+  font-size: 1.5rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.offers-line {
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, var(--mint), transparent);
+  opacity: 0.3;
+}
+
+.offers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.offer-card {
+  position: relative;
+  overflow: hidden;
+  padding: 1.5rem;
+  border-color: rgba(45, 212, 191, 0.3);
+}
+
+.offer-glow-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at top right, rgba(45, 212, 191, 0.15), transparent 70%);
+  pointer-events: none;
+}
+
+.offer-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.offer-icon {
+  color: var(--mint);
+  filter: drop-shadow(0 0 8px var(--mint-glow));
+}
+
+/* Timeline Side Panel Overlay */
+.timeline-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.timeline-panel {
+  width: 100%;
+  max-width: 500px;
+  height: 100vh;
+  margin: 0;
+  border-radius: 0;
+  border-left: 1px solid var(--card-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: rgba(0,0,0,0.2);
+}
+
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}

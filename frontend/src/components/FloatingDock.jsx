@@ -7,7 +7,7 @@ const links = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/applications', icon: Briefcase, label: 'Apps' },
   { to: '/applications/new', icon: PlusCircle, label: 'Add' },
-  { to: '/shortlisted', icon: UserCheck, label: 'Pipeline' },
+  { to: '/shortlisted', icon: UserCheck, label: 'Shortlisted' },
   { to: '/daily-goals', icon: Target, label: 'Goals' },
 ];
 

@@ -44,4 +44,24 @@ public class ApplicationRequestDTO {
     private String improvements;
 
     private Integer priority;
+
+    // V2: JD-parsed fields
+    @Size(max = 10000, message = "Qualifications cannot exceed 10000 characters")
+    private String qualifications;
+
+    @Size(max = 10000, message = "Requirements cannot exceed 10000 characters")
+    private String requirements;
+
+    @Size(max = 10000, message = "Responsibilities cannot exceed 10000 characters")
+    private String responsibilities;
+
+    @Size(max = 10000, message = "About company cannot exceed 10000 characters")
+    private String aboutCompany;
+
+    @Size(max = 2000, message = "Skills cannot exceed 2000 characters")
+    private String skills;
+
+    // V2: Source tracking
+    private String heardFrom;
+    private String appliedThrough;
 }

@@ -27,6 +27,18 @@ public class ApplicationResponseDTO {
     private Integer priority;
     private String resumeFileName;
     private boolean hasResume; // true if a PDF resume is attached
+
+    // V2: JD-parsed fields
+    private String qualifications;
+    private String requirements;
+    private String responsibilities;
+    private String aboutCompany;
+    private String skills;
+
+    // V2: Source tracking
+    private String heardFrom;
+    private String appliedThrough;
+
     private LocalDateTime createdAt;
     private LocalDateTime lastUpdated;
 }

@@ -1,127 +1,179 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getApplications, deleteApplication } from '../api';
-import { Search, Plus, Trash2, Filter, Building2 } from 'lucide-react';
+import { Search, Filter, Plus, Trash2, Eye } from 'lucide-react';
 import './ApplicationsList.css';
 
-const STATUSES = ['All', 'Wishlist', 'Applied', 'Interviewing', 'Shortlisted', 'Offer', 'Rejected', 'Ghosted'];
-const COMPANY_TYPES = ['All Types', 'Service Based', 'Product Based', 'Startup', 'Small Startup'];
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.3 } }
+};
 
 const ApplicationsList = () => {
   const [apps, setApps] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
-  const [typeFilter, setTypeFilter] = useState('All Types');
   const navigate = useNavigate();
 
-  const fetchApps = () => {
-    setLoading(true);
-    let params = { size: 100, sort: 'appliedDate,desc' };
-    if (search) params.company = search;
-    if (statusFilter !== 'All') params.status = statusFilter;
-
-    getApplications(params)
-      .then(res => {
-        if (res.success) {
-          let data = res.data.content;
-          if (typeFilter !== 'All Types') {
-            data = data.filter(a => a.companyType === typeFilter);
-          }
-          setApps(data);
-        }
-      })
-      .finally(() => setLoading(false));
-  };
-
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => fetchApps(), 400);
-    return () => clearTimeout(delayDebounceFn);
-  }, [search, statusFilter, typeFilter]);
-
-  const handleDelete = async (e, id) => {
-    e.stopPropagation();
-    if (!window.confirm('Delete this application?')) return;
-    await deleteApplication(id);
     fetchApps();
+  }, []);
+
+  const fetchApps = async () => {
+    try {
+      const res = await getApplications({ size: 100 });
+      if (res.success && res.data) {
+        setApps(res.data.content || []);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleDelete = async (id, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this application?")) return;
+    try {
+      const res = await deleteApplication(id);
+      if (res.success) {
+        setApps(apps.filter(app => app.id !== id));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const getStatusClass = (status) => {
+    switch (status) {
+      case 'Applied': return 'tag tag-applied';
+      case 'Shortlisted': return 'tag tag-offer';
+      case 'Rejected': return 'tag tag-rejected';
+      case 'Offer': return 'tag tag-offer';
+      default: return 'tag tag-ghosted';
+    }
+  };
+
+  const filteredApps = apps.filter(app => {
+    const matchesSearch = app.company.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          app.role.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'All' || app.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
-    <div className="fade-up">
-      <div className="page-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <motion.div 
+      className="list-page fade-up"
+      initial="hidden"
+      animate="show"
+      variants={staggerContainer}
+    >
+      <motion.div className="page-head page-head-actions" variants={fadeUp}>
         <div>
           <h1>Applications</h1>
-          <p className="sub">Manage and track your job applications.</p>
+          <p className="sub">Manage and track all your active job applications.</p>
         </div>
         <button className="btn btn-rose" onClick={() => navigate('/applications/new')}>
           <Plus size={18} /> New Application
         </button>
-      </div>
+      </motion.div>
 
-      <div className="bento list-toolbar">
-        <div className="search-wrap">
-          <Search size={18} className="search-icon" />
-          <input
-            type="text"
-            className="input search-input"
-            placeholder="Search company..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+      <motion.div className="controls bento" variants={fadeUp}>
+        <div className="search-box">
+          <Search size={18} className="text-muted" />
+          <input 
+            type="text" 
+            placeholder="Search company or role..." 
+            className="input"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="filter-wrap">
-          <Filter size={18} className="filter-icon" />
-          <select className="input filter-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+        <div className="filter-box">
+          <Filter size={18} className="text-muted" />
+          <select 
+            className="input" 
+            value={statusFilter} 
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="All">All Statuses</option>
+            <option value="Applied">Applied</option>
+            <option value="Shortlisted">Shortlisted</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Offer">Offer</option>
+            <option value="Ghosted">Ghosted</option>
           </select>
         </div>
-        <div className="filter-wrap">
-          <Building2 size={18} className="filter-icon" />
-          <select className="input filter-select" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-            {COMPANY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
-        </div>
-      </div>
+      </motion.div>
 
-      <div className="bento table-container">
-        {loading ? (
-          <div className="loading-center"><div className="spinner"></div></div>
-        ) : apps.length === 0 ? (
-          <div className="empty-state">No applications found.</div>
-        ) : (
-          <table className="app-table">
-            <thead>
-              <tr>
-                <th>Company</th>
-                <th>Type</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Platform</th>
-                <th>Date</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {apps.map(app => (
-                <tr key={app.id} onClick={() => navigate(`/applications/${app.id}`)}>
-                  <td><strong>{app.company}</strong></td>
-                  <td>{app.companyType || '—'}</td>
-                  <td>{app.role}</td>
-                  <td><span className={`tag tag-${app.status?.toLowerCase()}`}>{app.status}</span></td>
-                  <td>{app.platform || '—'}</td>
-                  <td>{app.appliedDate ? new Date(app.appliedDate).toLocaleDateString() : '—'}</td>
-                  <td className="actions-cell">
-                    <button className="icon-btn danger" onClick={(e) => handleDelete(e, app.id)}>
-                      <Trash2 size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-    </div>
+      <motion.div className="table-container bento" variants={fadeUp}>
+        <table className="apps-table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Type</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Source</th>
+              <th>Applied Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <motion.tbody variants={staggerContainer}>
+            {loading ? (
+              <tr><td colSpan="6" style={{textAlign: 'center', padding: '2rem'}}>Loading...</td></tr>
+            ) : filteredApps.length === 0 ? (
+              <tr><td colSpan="6" style={{textAlign: 'center', padding: '2rem'}}>No applications found.</td></tr>
+            ) : (
+              <AnimatePresence>
+                {filteredApps.map(app => (
+                  <motion.tr 
+                    key={app.id} 
+                    onClick={() => navigate(`/applications/${app.id}`)}
+                    className="clickable-row"
+                    layout
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.02)' }}
+                  >
+                    <td><strong>{app.company}</strong></td>
+                    <td><span className="text-muted">{app.companyType || '—'}</span></td>
+                    <td>{app.role}</td>
+                    <td>
+                      <span className={getStatusClass(app.status)}>
+                        {app.status}
+                      </span>
+                    </td>
+                    <td className="text-muted text-sm" style={{ lineHeight: '1.2' }}>
+                      {app.heardFrom || '—'} <br/>
+                      <span style={{opacity: 0.6}}>{app.appliedThrough}</span>
+                    </td>
+                    <td>{new Date(app.appliedDate).toLocaleDateString()}</td>
+                    <td>
+                      <div className="action-cell">
+                        <button className="icon-btn danger" onClick={(e) => handleDelete(app.id, e)}>
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
+            )}
+          </motion.tbody>
+        </table>
+      </motion.div>
+    </motion.div>
   );
 };
 

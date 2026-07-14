@@ -6,7 +6,7 @@ import ApplicationsList from './pages/ApplicationsList';
 import NewApplication from './pages/NewApplication';
 import ApplicationDetail from './pages/ApplicationDetail';
 import DailyGoals from './pages/DailyGoals';
-import ShortlistedPipeline from './pages/ShortlistedPipeline';
+import ShortlistedJobs from './pages/ShortlistedJobs';
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
           <Route path="/applications" element={<ApplicationsList />} />
           <Route path="/applications/new" element={<NewApplication />} />
           <Route path="/applications/:id" element={<ApplicationDetail />} />
-          <Route path="/shortlisted" element={<ShortlistedPipeline />} />
+          <Route path="/shortlisted" element={<ShortlistedJobs />} />
           <Route path="/daily-goals" element={<DailyGoals />} />
         </Routes>
         <FloatingDock />

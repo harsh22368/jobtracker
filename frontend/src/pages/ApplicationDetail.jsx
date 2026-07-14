@@ -1,9 +1,20 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getApplicationById, updateApplication, deleteApplication, getResumeDownloadUrl } from '../api';
 import axios from 'axios';
 import { ArrowLeft, Trash2, ExternalLink, Upload, Download, Edit3, Save, X } from 'lucide-react';
 import './ApplicationDetail.css';
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+};
 
 const ApplicationDetail = () => {
   const { id } = useParams();
@@ -27,19 +38,34 @@ const ApplicationDetail = () => {
 
   const set = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
+  const handleParseJD = async () => {
+    if (!rawJd.trim()) return;
+    setParsing(true);
+    try {
+      const res = await parseJobDescription(rawJd);
+      if (res.success && res.data) {
+        setApp(prev => ({ ...prev, ...res.data }));
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setParsing(false);
+    }
+  };
+
+  const getStatusClass = (status) => {
+    switch (status) {
+      case 'Applied': return 'tag tag-applied';
+      case 'Shortlisted': return 'tag tag-offer';
+      case 'Rejected': return 'tag tag-rejected';
+      case 'Offer': return 'tag tag-offer';
+      default: return 'tag tag-ghosted';
+    }
+  };
+
   const handleSave = async () => {
     try {
-      const payload = {
-        company: form.company, role: form.role, status: form.status,
-        currentStage: form.currentStage, platform: form.platform,
-        appliedDate: form.appliedDate, resumeVersion: form.resumeVersion,
-        jobDescription: form.jobDescription, jobUrl: form.jobUrl,
-        location: form.location, employmentType: form.employmentType,
-        oaDetails: form.oaDetails,
-        interviewQuestions: form.interviewQuestions,
-        mistakes: form.mistakes, improvements: form.improvements,
-        priority: form.priority,
-      };
+      const payload = { ...form };
       const res = await updateApplication(id, payload);
       if (res.success) {
         setApp(res.data);
@@ -94,55 +120,61 @@ const ApplicationDetail = () => {
   if (loading) return <div className="loading-center"><div className="spinner"></div></div>;
   if (!app) return <div className="loading-center">Application not found.</div>;
 
+  const skillsList = (app.skills || '').split(',').map(s => s.trim()).filter(Boolean);
+
   return (
-    <div className="fade-up detail-page">
-      <div className="detail-top-bar">
+    <motion.div 
+      className="fade-up detail-page"
+      initial="hidden"
+      animate="show"
+      variants={staggerContainer}
+    >
+      <motion.div className="detail-top-bar" variants={fadeUp}>
         <button className="btn btn-ghost" onClick={() => navigate('/applications')}><ArrowLeft size={16} /> Back</button>
         <div className="detail-actions">
           {editing ? (
             <>
               <button className="btn btn-ghost" onClick={() => { setForm(app); setEditing(false); }}><X size={16} /> Cancel</button>
-              <button className="btn btn-rose" onClick={handleSave}><Save size={16} /> Save</button>
+              <button className="btn btn-mint" onClick={handleSave}><Save size={16} /> Save</button>
             </>
           ) : (
             <button className="btn btn-ghost" onClick={() => setEditing(true)}><Edit3 size={16} /> Edit</button>
           )}
           <button className="btn btn-danger" onClick={handleDelete}><Trash2 size={16} /> Delete</button>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="bento detail-header">
+      <motion.div className="bento detail-header" variants={fadeUp}>
         <div className="header-main">
           <h1 className="detail-company">{app.company}</h1>
           <p className="detail-role">{app.role}</p>
         </div>
         <div className="header-meta">
-          <span className={`tag tag-${app.status?.toLowerCase()}`}>{app.status}</span>
+          <span className={getStatusClass(app.status)} style={{ padding: '0.4rem 1.2rem', fontSize: '0.9rem' }}>{app.status}</span>
           <span className="meta-badge">{app.currentStage || '—'}</span>
           {app.priority && <span className="meta-badge">⭐ Priority {app.priority}/5</span>}
         </div>
-      </div>
+      </motion.div>
 
-      <div className="detail-grid">
-        <div className="bento detail-section">
+      <motion.div className="detail-grid" variants={staggerContainer}>
+        <motion.div className="bento detail-section" variants={fadeUp}>
           <h3 className="section-title">Application Details</h3>
           <div className="info-list">
-            <InfoRow label="Platform" value={editing ? <input name="platform" value={form.platform || ''} onChange={set} className="input" /> : app.platform} />
+            <InfoRow label="Source" value={editing ? <input name="heardFrom" value={form.heardFrom || ''} onChange={set} className="input" placeholder="Heard from..." /> : app.heardFrom} />
+            <InfoRow label="Method" value={editing ? <input name="appliedThrough" value={form.appliedThrough || ''} onChange={set} className="input" placeholder="Applied through..." /> : app.appliedThrough} />
             <InfoRow label="Applied" value={formatDate(app.appliedDate)} />
             <InfoRow label="Location" value={editing ? <input name="location" value={form.location || ''} onChange={set} className="input" /> : app.location} />
             <InfoRow label="Type" value={app.employmentType} />
             <InfoRow label="Resume" value={app.resumeVersion} />
-            <InfoRow label="Created" value={formatDateTime(app.createdAt)} />
-            <InfoRow label="Updated" value={formatDateTime(app.lastUpdated)} />
           </div>
           {app.jobUrl && (
-            <a href={app.jobUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost" style={{ marginTop: '1.5rem', width: '100%', justifyContent: 'center' }}>
+            <a href={app.jobUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost mt-4" style={{ width: '100%', justifyContent: 'center' }}>
               <ExternalLink size={14} /> Open Job Posting
             </a>
           )}
-        </div>
+        </motion.div>
 
-        <div className="bento detail-section">
+        <motion.div className="bento detail-section" variants={fadeUp}>
           <h3 className="section-title">Resume</h3>
           <div className="resume-actions">
             <input type="file" ref={fileRef} accept=".pdf" onChange={handleUploadResume} style={{ display: 'none' }} />
@@ -156,23 +188,51 @@ const ApplicationDetail = () => {
             )}
           </div>
           {!app.hasResume && <p className="empty-state-text mt-4">No resume uploaded yet.</p>}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      {app.jobDescription && (
-        <div className="bento detail-section full-width">
-          <h3 className="section-title">Job Description</h3>
-          <pre className="jd-content">{app.jobDescription}</pre>
-        </div>
+      {/* JD Extracted Details */}
+      {(skillsList.length > 0 || app.qualifications || app.requirements || app.responsibilities || app.aboutCompany || editing) && (
+        <motion.div className="detail-grid mt-4" variants={staggerContainer}>
+          
+          {(skillsList.length > 0 || editing) && (
+            <motion.div className="bento detail-section full-width" variants={fadeUp}>
+              <h3 className="section-title">Skills</h3>
+              {editing ? (
+                <input name="skills" value={form.skills || ''} onChange={set} className="input" placeholder="Comma separated skills..." />
+              ) : (
+                <div className="skills-container mt-2">
+                  {skillsList.map((skill, i) => (
+                    <span key={i} className="skill-tag">{skill}</span>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          )}
+
+          <TextSection title="Requirements" value={editing ? form.requirements : app.requirements} name="requirements" editing={editing} onChange={set} variants={fadeUp} />
+          <TextSection title="Qualifications" value={editing ? form.qualifications : app.qualifications} name="qualifications" editing={editing} onChange={set} variants={fadeUp} />
+          <TextSection title="Responsibilities" value={editing ? form.responsibilities : app.responsibilities} name="responsibilities" editing={editing} onChange={set} variants={fadeUp} />
+          <TextSection title="About Company" value={editing ? form.aboutCompany : app.aboutCompany} name="aboutCompany" editing={editing} onChange={set} variants={fadeUp} />
+        </motion.div>
       )}
 
-      <div className="detail-grid">
-        <TextSection title="OA Details" value={editing ? form.oaDetails : app.oaDetails} name="oaDetails" editing={editing} onChange={set} />
-        <TextSection title="Interview Questions" value={editing ? form.interviewQuestions : app.interviewQuestions} name="interviewQuestions" editing={editing} onChange={set} />
-        <TextSection title="Mistakes" value={editing ? form.mistakes : app.mistakes} name="mistakes" editing={editing} onChange={set} />
-        <TextSection title="Improvements" value={editing ? form.improvements : app.improvements} name="improvements" editing={editing} onChange={set} />
-      </div>
-    </div>
+      {/* Interview / Progress Details */}
+      <motion.div className="detail-grid mt-4" variants={staggerContainer}>
+        <TextSection title="OA Details" value={editing ? form.oaDetails : app.oaDetails} name="oaDetails" editing={editing} onChange={set} variants={fadeUp} />
+        <TextSection title="Interview Questions" value={editing ? form.interviewQuestions : app.interviewQuestions} name="interviewQuestions" editing={editing} onChange={set} variants={fadeUp} />
+        <TextSection title="Mistakes" value={editing ? form.mistakes : app.mistakes} name="mistakes" editing={editing} onChange={set} variants={fadeUp} />
+        <TextSection title="Improvements" value={editing ? form.improvements : app.improvements} name="improvements" editing={editing} onChange={set} variants={fadeUp} />
+      </motion.div>
+
+      {app.jobDescription && (
+        <motion.div className="bento detail-section full-width mt-4" variants={fadeUp}>
+          <h3 className="section-title">Raw Job Description</h3>
+          <pre className="jd-content">{app.jobDescription}</pre>
+        </motion.div>
+      )}
+
+    </motion.div>
   );
 };
 
@@ -183,15 +243,19 @@ const InfoRow = ({ label, value }) => (
   </div>
 );
 
-const TextSection = ({ title, value, name, editing, onChange }) => (
-  <div className="bento detail-section">
-    <h3 className="section-title">{title}</h3>
-    {editing ? (
-      <textarea name={name} value={value || ''} onChange={onChange} className="input" rows="4" />
-    ) : (
-      <p className="section-text">{value || <span className="empty-state-text">Nothing recorded yet.</span>}</p>
-    )}
-  </div>
-);
+const TextSection = ({ title, value, name, editing, onChange, variants }) => {
+  if (!editing && !value) return null;
+  
+  return (
+    <motion.div className="bento detail-section" variants={variants}>
+      <h3 className="section-title">{title}</h3>
+      {editing ? (
+        <textarea name={name} value={value || ''} onChange={onChange} className="input mt-2" rows="4" />
+      ) : (
+        <p className="section-text mt-2">{value}</p>
+      )}
+    </motion.div>
+  );
+};
 
 export default ApplicationDetail;

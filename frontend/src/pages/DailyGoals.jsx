@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Target, Plus, Trash2, CheckCircle, Circle } from 'lucide-react';
 import './DailyGoals.css';
 
@@ -7,6 +8,16 @@ const DEFAULT_GOALS = [
   { id: 2, text: 'Solve 3 DSA problems', target: 3, done: 0 },
   { id: 3, text: 'Review 1 system design topic', target: 1, done: 0 },
 ];
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+};
 
 const DailyGoals = () => {
   const todayKey = new Date().toISOString().split('T')[0];
@@ -47,17 +58,27 @@ const DailyGoals = () => {
     : 0;
 
   return (
-    <div className="fade-up goals-page">
-      <div className="page-head" style={{ textAlign: 'center' }}>
+    <motion.div 
+      className="goals-page fade-up"
+      initial="hidden"
+      animate="show"
+      variants={staggerContainer}
+    >
+      <motion.div className="page-head" style={{ textAlign: 'center' }} variants={fadeUp}>
         <h1>Daily Goals</h1>
         <p className="sub">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</p>
-      </div>
+      </motion.div>
 
-      <div className="bento progress-bento">
+      <motion.div className="bento progress-bento" variants={fadeUp}>
         <div className="progress-ring-wrap">
           <svg viewBox="0 0 120 120" className="progress-ring">
             <circle cx="60" cy="60" r="52" className="ring-bg" />
-            <circle cx="60" cy="60" r="52" className="ring-fill" style={{ strokeDashoffset: 327 - (327 * totalProgress) / 100 }} />
+            <motion.circle 
+              cx="60" cy="60" r="52" className="ring-fill" 
+              initial={{ strokeDashoffset: 327 }}
+              animate={{ strokeDashoffset: 327 - (327 * totalProgress) / 100 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+            />
           </svg>
           <span className="progress-text">{totalProgress}%</span>
         </div>
@@ -65,35 +86,50 @@ const DailyGoals = () => {
           <h3>Today's Progress</h3>
           <p className="text-muted">{goals.filter(g => g.done >= g.target).length} of {goals.length} goals completed</p>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="goals-list">
-        {goals.map(goal => {
-          const completed = goal.done >= goal.target;
-          const percent = Math.round((goal.done / goal.target) * 100);
-          return (
-            <div key={goal.id} className={`bento goal-item ${completed ? 'completed' : ''}`}>
-              <div className="goal-check" onClick={() => increment(goal.id)}>
-                {completed ? <CheckCircle size={22} color="var(--mint)" /> : <Circle size={22} color="var(--text-muted)" />}
-              </div>
-              <div className="goal-content">
-                <span className="goal-text">{goal.text}</span>
-                <div className="goal-bar-bg">
-                  <div className="goal-bar" style={{ width: `${percent}%` }} />
+      <motion.div className="goals-list" variants={staggerContainer}>
+        <AnimatePresence>
+          {goals.map(goal => {
+            const completed = goal.done >= goal.target;
+            const percent = Math.round((goal.done / goal.target) * 100);
+            return (
+              <motion.div 
+                key={goal.id} 
+                className={`bento goal-item ${completed ? 'completed' : ''}`}
+                layout
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, height: 0, marginBottom: 0, padding: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="goal-check" onClick={() => increment(goal.id)}>
+                  {completed ? <CheckCircle size={22} color="var(--mint)" /> : <Circle size={22} color="var(--text-muted)" />}
                 </div>
-              </div>
-              <div className="goal-counter">
-                <button className="counter-btn" onClick={() => decrement(goal.id)}>−</button>
-                <span className="counter-value">{goal.done}/{goal.target}</span>
-                <button className="counter-btn" onClick={() => increment(goal.id)}>+</button>
-              </div>
-              <button className="icon-btn danger" onClick={() => remove(goal.id)}><Trash2 size={16} /></button>
-            </div>
-          );
-        })}
-      </div>
+                <div className="goal-content">
+                  <span className="goal-text">{goal.text}</span>
+                  <div className="goal-bar-bg">
+                    <motion.div 
+                      className="goal-bar" 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${percent}%` }}
+                      transition={{ duration: 0.5 }}
+                    />
+                  </div>
+                </div>
+                <div className="goal-counter">
+                  <button className="counter-btn" onClick={() => decrement(goal.id)}>−</button>
+                  <span className="counter-value">{goal.done}/{goal.target}</span>
+                  <button className="counter-btn" onClick={() => increment(goal.id)}>+</button>
+                </div>
+                <button className="icon-btn danger" onClick={() => remove(goal.id)}><Trash2 size={16} /></button>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </motion.div>
 
-      <div className="bento add-goal-bar">
+      <motion.div className="bento add-goal-bar" variants={fadeUp}>
         <Plus size={18} className="text-muted" />
         <input
           className="input"
@@ -112,8 +148,8 @@ const DailyGoals = () => {
           style={{ border: 'none', background: 'rgba(255,255,255,0.05)', width: '70px', textAlign: 'center' }}
         />
         <button className="btn btn-rose" onClick={addGoal}>Add</button>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

@@ -32,6 +32,7 @@
   --radius-sm: 12px;
   --radius-xs: 8px;
   --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color-scheme: dark;
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -87,9 +88,14 @@ ul { list-style: none; }
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
 }
 
-/* ── Page Header ── */
 .page-head {
   margin-bottom: 2rem;
+}
+
+.page-head-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .page-head h1 {

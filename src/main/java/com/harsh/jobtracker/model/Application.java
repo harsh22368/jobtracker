@@ -60,6 +60,26 @@ public class Application {
 
     private Integer priority; // 1-5
 
+    // V2: JD-parsed fields
+    @Column(columnDefinition = "TEXT")
+    private String qualifications;
+
+    @Column(columnDefinition = "TEXT")
+    private String requirements;
+
+    @Column(columnDefinition = "TEXT")
+    private String responsibilities;
+
+    @Column(columnDefinition = "TEXT")
+    private String aboutCompany;
+
+    @Column(length = 2000)
+    private String skills; // Comma-separated skills
+
+    // V2: Source tracking
+    private String heardFrom; // Where they discovered the job (LinkedIn, Naukri, etc.)
+    private String appliedThrough; // How they actually applied (Easy Apply, Portal, etc.)
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
